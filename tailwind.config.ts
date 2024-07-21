@@ -19,6 +19,9 @@ const config: Config = {
         'light-grey': '#fafafa',
         'dark-grey': '#333333',
       },
+      borderRadius: {
+        'custom-32': '32px',
+      },
     },
   },
   plugins: [],
