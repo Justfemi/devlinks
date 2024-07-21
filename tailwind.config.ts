@@ -13,7 +13,6 @@ const config: Config = {
       },
       colors: {
         'purple': '#633CFF',
-        'white': '#FFF',
       },
     },
   },
