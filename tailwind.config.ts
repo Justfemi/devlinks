@@ -13,6 +13,11 @@ const config: Config = {
       },
       colors: {
         'purple': '#633CFF',
+        'light-purple': '#EFEBFF',
+        'purple-hover': '#BEADFF',
+        'grey': '#737373',
+        'light-grey': '#fafafa',
+        'dark-grey': '#333333',
       },
     },
   },
