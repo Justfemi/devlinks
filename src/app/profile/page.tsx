@@ -112,7 +112,7 @@ export default function Profile() {
                 <p className="text-grey font-normal text-xs">Image must be below 1024x1024px. Use PNG or JPG format.</p>
               </div>
 
-              <div className="mt-6 p-5 bg-light-grey rounded-xl">
+              <div className="mt-6 sm:p-5 p-3 bg-light-grey rounded-xl">
                 <div className="flex sm:items-center items-start justify-between gap-4 mb-3 sm:flex-row flex-col">
                   <p className="text-base font-normal text-grey sm:w-60 w-auto">First name * </p>
                   <input 
