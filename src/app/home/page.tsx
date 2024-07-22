@@ -9,7 +9,7 @@ import { FaLink } from "react-icons/fa";
 import { BsGithub, BsTwitter, BsFacebook, BsLinkedin, BsChevronDown, BsChevronUp } from 'react-icons/bs';
 import { FaYoutube } from 'react-icons/fa';
 import { useState, FormEvent, MouseEvent, ChangeEvent, FocusEvent} from "react";
-import withAuth from "../../components/hoc/WithAuth";
+// import withAuth from "../../components/hoc/WithAuth";
 
 type Link = {
   id: number;
@@ -27,7 +27,7 @@ const platforms = [
   { name: 'Youtube', icon: <FaYoutube /> },
 ];
 
-function Home() {
+export default function Home() {
   const [isLinkAdded, setIsLinkAdded] = useState<boolean>(true);
   const [links, setLinks] = useState<Link[]>([]);
   const [url, setUrl] = useState<string>('');
@@ -274,4 +274,4 @@ function Home() {
   );
 }
 
-export default withAuth(Home);
+// export default withAuth(Home);
