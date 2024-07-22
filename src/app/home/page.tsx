@@ -9,14 +9,7 @@ import { FaLink } from "react-icons/fa";
 import { BsGithub, BsTwitter, BsFacebook, BsLinkedin, BsChevronDown, BsChevronUp } from 'react-icons/bs';
 import { FaYoutube } from 'react-icons/fa';
 import { useState, FormEvent, MouseEvent, ChangeEvent, FocusEvent} from "react";
-// firebase import
-import db from "../../firebase/firestore";
-import { collection, addDoc } from "@firebase/firestore";
-
-// import { getTokens } from "next-firebase-auth-edge";
-// import { cookies } from "next/headers";
-// import { notFound } from "next/navigation";
-// import { clientConfig, serverConfig } from "../../../config";
+import withAuth from "../../components/hoc/WithAuth";
 
 type Link = {
   id: number;
@@ -34,33 +27,12 @@ const platforms = [
   { name: 'Youtube', icon: <FaYoutube /> },
 ];
 
-export default function Home() {
+function Home() {
   const [isLinkAdded, setIsLinkAdded] = useState<boolean>(true);
   const [links, setLinks] = useState<Link[]>([]);
   const [url, setUrl] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [availablePlatforms, setAvailablePlatforms] = useState(platforms);
-
-//   useEffect(() => {
-//     const fetchTokens = async () => {
-//     try {
-//       const tokens = await getTokens(cookies(), {
-//         apiKey: clientConfig.apiKey,
-//         cookieName: serverConfig.cookieName,
-//         cookieSignatureKeys: serverConfig.cookieSignatureKeys,
-//         serviceAccount: serverConfig.serviceAccount,
-//       });
-
-//       if (!tokens) {
-//         notFound();
-//       }
-//     } catch (error) {
-//       console.error('Error fetching tokens:', error);
-//     }
-//   };
-
-//   fetchTokens();
-// }, []); 
   
   const handleAddLink = (event: MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
@@ -81,7 +53,7 @@ export default function Home() {
         .filter((link) => link.id !== id)
         .map((link, index) => ({ ...link, id: index + 1 }));
       
-      setAvailablePlatforms([...platforms]); // Reset the available platforms
+      setAvailablePlatforms([...platforms]);
       updatedLinks.forEach(link => {
         setAvailablePlatforms((prevPlatforms) =>
           prevPlatforms.filter(platform => platform.name !== link.platform)
@@ -215,9 +187,6 @@ export default function Home() {
           <div className="sm:p-10 p-5">
             <h2 className="text-dark-grey font-bold text-[32px]">Customize your links</h2>
             <p className="text-grey font-normal text-base mb-10 mt-2">Add/edit/remove links below and then share all your profiles with the world!</p>
-            {/* <p>
-              Only <strong>{tokens?.decodedToken.email}</strong> holds the magic key to this kingdom!
-            </p> */}
             <button 
               className="bg-transparent border border-purple rounded-lg text-purple py-2.5 w-full hover:bg-light-purple"
               onClick={handleAddLink}
@@ -304,3 +273,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default withAuth(Home);
