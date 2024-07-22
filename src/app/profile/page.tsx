@@ -29,7 +29,7 @@ export default function Profile() {
 
   return (
     <>
-      <div className="bg-light-purple sm:p-6  p-0">
+      <div className="bg-light-purple sm:p-6 p-0">
         <ProfileHeader />
         <div className="flex gap-6 justify-between items-start mt-6 sm:p-0 p-6">
           <div className="relative bg-white w-1/3 rounded-xl p-6 hidden lg:block">
@@ -65,7 +65,7 @@ export default function Profile() {
             </div>
           </div>
           <div className="bg-white lg:w-2/3 w-full rounded-xl">
-            <div className="sm:p-10 p-5">
+            <div className="sm:p-10 p-4">
               <h2 className="text-dark-grey font-bold text-[32px]">Profile Details</h2>
               <p className="text-grey font-normal text-base mb-10 mt-2">Add your details to create a personal touch to your profile.</p>
 
