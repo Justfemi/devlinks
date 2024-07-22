@@ -1,0 +1,108 @@
+Yes, you can use the server-side authentication check approach (Approach 3) to ensure that pages are protected based on user authentication. This approach involves checking the authentication status on the server side before rendering the page. Here’s how you can implement it:
+
+### Key Points:
+
+1. **Server-Side Authentication**:
+   - The authentication check is performed during server-side rendering (SSR), ensuring that the user is authenticated before the page is sent to the client.
+   - This method can be useful for protecting sensitive pages or content from unauthorized access.
+
+2. **No Need for `withAuth.tsx`**:
+   - If you are using server-side authentication checks, you generally don’t need a higher-order component (`withAuth.tsx`) for the same purpose. Server-side authentication can handle route protection without relying on client-side logic.
+
+### Implementation Steps
+
+1. **Setup Firebase Admin SDK**:
+   - Install the Firebase Admin SDK if you haven’t already:
+     ```bash
+     npm install firebase-admin
+     ```
+
+   - Create a file to initialize Firebase Admin, e.g., `firebaseAdmin.ts`:
+     ```typescript
+     // firebaseAdmin.ts
+     import admin from 'firebase-admin';
+
+     if (!admin.apps.length) {
+       admin.initializeApp({
+         credential: admin.credential.cert({
+           projectId: process.env.FIREBASE_PROJECT_ID,
+           privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+           clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+         }),
+         // Optionally specify the databaseURL if needed
+         // databaseURL: 'https://<your-database-name>.firebaseio.com',
+       });
+     }
+
+     export const firebaseAdmin = admin;
+     ```
+
+2. **Protect Your Page**:
+   - Use `getServerSideProps` in your protected page to check for authentication. Here’s an example of how to do this:
+     ```typescript
+     // pages/protected.tsx
+     import { GetServerSideProps } from 'next';
+     import { firebaseAdmin } from '../firebaseAdmin'; // Adjust the import path as necessary
+
+     export const getServerSideProps: GetServerSideProps = async (context) => {
+       const token = context.req.cookies.token; // Assuming token is stored in cookies
+
+       try {
+         const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
+         if (decodedToken) {
+           // User is authenticated
+           return { props: {} }; // Return empty props or any props you need
+         }
+       } catch (error) {
+         console.error(error);
+       }
+
+       // Redirect to login if not authenticated
+       return { redirect: { destination: '/login', permanent: false } };
+     };
+
+     const ProtectedPage = () => {
+       return (
+         <div>
+           <h1>This is a protected page</h1>
+         </div>
+       );
+     };
+
+     export default ProtectedPage;
+     ```
+
+3. **Handling Authentication on Login**:
+   - Ensure that the client-side login process sets the authentication token as a cookie:
+     ```typescript
+     // Example of setting token cookie after successful login
+     import { serialize } from 'cookie';
+     import { NextApiRequest, NextApiResponse } from 'next';
+     import { getAuth } from 'firebase/auth';
+     import { app } from '../firebase'; // Your Firebase configuration
+
+     export default async function loginHandler(req: NextApiRequest, res: NextApiResponse) {
+       const auth = getAuth(app);
+       const { email, password } = req.body;
+
+       try {
+         const userCredential = await auth.signInWithEmailAndPassword(email, password);
+         const token = await userCredential.user.getIdToken();
+         
+         // Set token as cookie
+         res.setHeader('Set-Cookie', serialize('token', token, { httpOnly: true, path: '/' }));
+         res.status(200).json({ message: 'Login successful' });
+       } catch (error) {
+         res.status(401).json({ error: 'Invalid credentials' });
+       }
+     }
+     ```
+
+### Summary
+
+- **`withAuth.tsx` is Not Required**: You don’t need `withAuth.tsx` for server-side protection if you’re using `getServerSideProps`.
+- **Use `getServerSideProps`**: This function runs on the server side and checks authentication before rendering the page.
+- **Server-Side Initialization**: Ensure Firebase Admin SDK is initialized properly on the server side.
+- **Cookie Handling**: Manage cookies to handle authentication tokens securely.
+
+This approach ensures that the page is only accessible if the user is authenticated, providing a more secure way to protect routes in your Next.js application.
