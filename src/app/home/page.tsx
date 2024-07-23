@@ -201,7 +201,7 @@ export default function Home() {
             priority
           />
           <div className="absolute top-3/4 transform -translate-y-10 left-18 translate-x-16">
-            {items.map((item) => (
+            {items.slice(0, 5).map((item) => (
               <div key={item.id}>
                 {item.links.map((link, index) => {
                   const platformDetail = platformDetails[link.platform] || { icon: null, color: 'bg-white' };
@@ -281,7 +281,7 @@ export default function Home() {
                           onPlatformChange={(platform) => handlePlatformChange(platform, link.id)}
                           availablePlatforms={availablePlatforms}
                         />
-                        {link.platformError && <p className="text-red-500">{link.platformError}</p>}
+                        {link.platformError && <p className="text-red">{link.platformError}</p>}
                       </div>
 
                       <div className="relative flex flex-col">
@@ -297,7 +297,7 @@ export default function Home() {
                           placeholder="e.g. https://www.github.com/johnappleseed"
                           className="pl-9 pr-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                         />
-                        {link.error && <p className="absolute right-3 bottom-1/4 transform -translate-y-1/6 text-red-500">{link.error}</p>}
+                        {link.error && <p className="absolute right-3 bottom-1/4 transform -translate-y-1/6 text-red">{link.error}</p>}
                       </div>
                     </div>
                   ))

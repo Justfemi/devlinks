@@ -73,7 +73,7 @@ export default function Profile() {
               className="mx-auto my-10"
             />
             <div className="absolute top-1/2 transform -translate-y-11 left-18 translate-x-16">
-              {items.map((item) => (
+              {items.slice(0, 5).map((item) => (
                 <div key={item.id}>
                   {item.links.map((link, index) => {
                     const platformDetail = platformDetails[link.platform] || { icon: null, color: 'bg-white' };
