@@ -1,23 +1,45 @@
 "use client"
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import ProfileHeader from "../../components/ProfileHeader";
 import Image from "next/image";
 import empty from "../../../public/images/home-empty.svg";
 import phone from "../../../public/images/phoneLayout.svg";
-import { BsGithub } from 'react-icons/bs';
+import { BsGithub, BsTwitter, BsFacebook, BsLinkedin } from 'react-icons/bs';
 import { FaArrowRight, FaLinkedin, FaYoutube } from 'react-icons/fa';
 import { IoImageOutline } from "react-icons/io5";
+// import Link from "next/link";
+import { db } from "../../../firebase";
+import { collection, doc, getDocs, QuerySnapshot, DocumentData} from "@firebase/firestore";
+
+interface Links {
+  platform: string;
+  url: string;
+}
+
+interface Item {
+  id: string;
+  links: Links[];
+}
 
 export default function Profile() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [imageURL, setImageURL] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [items, setItems] = useState<Item[]>([]);
 
   const handleButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
+
+  const platformDetails: Record<string, { icon: JSX.Element, color: string }> = {
+  Github: { icon: <BsGithub />, color: 'bg-black' },
+  Twitter: { icon: <BsTwitter />, color: 'bg-red' },
+  Facebook: { icon: <BsFacebook />, color: 'bg-blue' },
+  LinkedIn: { icon: <BsLinkedin />, color: 'bg-green' },
+  Youtube: { icon: <FaYoutube />, color: 'bg-brown' },
+};
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -26,6 +48,16 @@ export default function Profile() {
       setImageURL(url);
     }
   };
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(collection(db, "items"));
+      const itemsData: Item[] = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Item));
+      setItems(itemsData);
+    };
+
+    fetchItems();
+  }, []);
 
   return (
     <>
@@ -39,7 +71,48 @@ export default function Profile() {
               className="mx-auto my-10"
             />
             <div className="absolute top-1/2 transform -translate-y-11 left-18 translate-x-16">
-              <div className='bg-[#1A1A1A] text-white rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]'>
+              {items.map((item) => (
+                <div key={item.id}>
+                  {item.links.map((link, index) => {
+                    const platformDetail = platformDetails[link.platform] || { icon: null, color: 'bg-white' };
+
+                    return (
+                      <div
+                        className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]`}
+                        key={index}
+                      >
+                        {/* <Link href={link.url} passHref> */}
+                        <div className='flex items-center gap-2'>
+                          {platformDetail.icon}
+                          <p className='text-base font-normal'>{link.platform}</p>
+                        </div>
+
+                        <div>
+                          <FaArrowRight />
+                        </div>
+                        {/* </Link> */}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            {/* {items.map((item) => (
+              <div key={item.id} >
+                {item.links.map((link, index) => (
+                  <div className='bg-[#1A1A1A] text-white rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]' key={index}>
+                    <Link href={link.url}>
+                      <div className='flex items-center gap-2'>
+                        {platformDetail.icon}
+                        <p className='text-base font-normal'>{link.platform}</p>
+                      </div>
+                      <FaArrowRight />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            ))} */}
+              {/* HARDCORDED BUTTONS */}
+              {/* <div className='bg-[#1A1A1A] text-white rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]'>
                 <div className='flex items-center gap-2'>
                   <BsGithub />
                   <p className='text-base font-normal'>Github</p>
@@ -47,21 +120,20 @@ export default function Profile() {
                 <FaArrowRight />
               </div>
 
-              <div className='bg-[#EE3939] text-white p-3 rounded-lg mb-5 cursor-pointer flex items-center justify-between w-[250px]'>
+              <div className='bg-red text-white p-3 rounded-lg mb-5 cursor-pointer flex items-center justify-between w-[250px]'>
                 <div className='flex items-center gap-2'>
                   <FaYoutube />
                   <p className='text-base font-normal'>Youtube</p>
                 </div>
                 <FaArrowRight />
               </div>
-
-              <div className='bg-[#2D68FF] text-white p-3 rounded-lg mb-5 cursor-pointer flex items-center justify-between w-[250px]'>
+              <div className='bg-blue text-white p-3 rounded-lg mb-5 cursor-pointer flex items-center justify-between w-[250px]'>
                 <div className='flex items-center gap-2'>
                   <FaLinkedin />
                   <p className='text-base font-normal'>LinkedIn</p>
                 </div>
                 <FaArrowRight />
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="bg-white lg:w-2/3 w-full rounded-xl">

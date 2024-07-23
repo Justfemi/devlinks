@@ -6,17 +6,20 @@ import empty from "../../../public/images/home-empty.svg";
 import phone from "../../../public/images/phoneLayout.svg";
 import { MdDragHandle } from "react-icons/md";
 import { FaLink } from "react-icons/fa";
+// import { Link } from "next/link";
 import { BsGithub, BsTwitter, BsFacebook, BsLinkedin, BsChevronDown, BsChevronUp } from 'react-icons/bs';
-import { FaYoutube } from 'react-icons/fa';
-import { useState, FormEvent, MouseEvent, ChangeEvent, FocusEvent} from "react";
+import { FaYoutube, FaArrowRight, FaLinkedin } from 'react-icons/fa';
+import { useState, useEffect, FormEvent, MouseEvent, ChangeEvent, FocusEvent} from "react";
 // import withAuth from "../../components/hoc/WithAuth";
+import { db } from "../../../firebase";
+import { collection, addDoc, doc, updateDoc, getDocs, deleteDoc, QuerySnapshot, DocumentData} from "@firebase/firestore";
 
 type Link = {
   id: number;
   platform: string;
   url: string;
-  error: string;
-  platformError: string;
+  error?: string;
+  platformError?: string;
 };
 
 const platforms = [
@@ -27,12 +30,23 @@ const platforms = [
   { name: 'Youtube', icon: <FaYoutube /> },
 ];
 
+interface Links {
+  platform: string;
+  url: string;
+}
+
+interface Item {
+  id: string;
+  links: Links[];
+}
+
 export default function Home() {
   const [isLinkAdded, setIsLinkAdded] = useState<boolean>(true);
   const [links, setLinks] = useState<Link[]>([]);
   const [url, setUrl] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [availablePlatforms, setAvailablePlatforms] = useState(platforms);
+  const [items, setItems] = useState<Item[]>([]);
   
   const handleAddLink = (event: MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
@@ -47,12 +61,19 @@ export default function Home() {
     }
   };
   
-  const handleRemoveLink = (id: number): void => {
+  const handleRemoveLink = async (id: number): Promise<void> => {
+    try {
+      await deleteDoc(doc(db, "items", id.toString()));
+      setItems((prevItems) => prevItems.filter((item) => item.id !== id.toString()));
+    } catch (error) {
+      console.error("Error removing document: ", error);
+    }
+
     setLinks((prevLinks) => {
       const updatedLinks = prevLinks
         .filter((link) => link.id !== id)
         .map((link, index) => ({ ...link, id: index + 1 }));
-      
+
       setAvailablePlatforms([...platforms]);
       updatedLinks.forEach(link => {
         setAvailablePlatforms((prevPlatforms) =>
@@ -140,36 +161,25 @@ export default function Home() {
 
     if (!valid) return;
 
-    // Handle the submission logic here
-    console.log('Links:', links);
-    // Create the object with only platforms and URLs
-    // const postData = links.map(link => ({
-    //   platform: link.platform,
-    //   url: link.url
-    // }));
-
-    // Send the object to the endpoint
-    // try {
-    //   const response = await fetch('YOUR_ENDPOINT_URL', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify(postData)
-    //   });
-
-    //   if (response.ok) {
-    //     console.log('Links posted successfully:', postData);
-    //     // Handle successful response
-    //   } else {
-    //     console.error('Failed to post links:', response.statusText);
-    //     // Handle error response
-    //   }
-    // } catch (error) {
-    //   console.error('An error occurred:', error);
-    //   // Handle network error
-    // }
+    try {
+      const docRef = await addDoc(collection(db, 'items'), {
+        links,
+      })
+      console.log("Document with ID: ", docRef.id);
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
   };
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(collection(db, "items"));
+      const itemsData: Item[] = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Item));
+      setItems(itemsData);
+    };
+
+    fetchItems();
+  }, []);
 
   return (
     <div className="bg-light-purple sm:p-6  p-0">
@@ -182,6 +192,50 @@ export default function Home() {
             className="mx-auto my-14"
             priority
           />
+          {/* <ul>
+            {items.map((item) => (
+              <li key={item.id}>
+                {item.links.map((link, index) => (
+                  <div key={index}>
+                    <p>Platform - {link.platform}</p>
+                    <p>URL - {link.url}</p>
+                  </div>
+                ))}
+              </li>
+            ))}
+          </ul> */}
+          <div className="absolute top-1/2 transform -translate-y-11 left-18 translate-x-16">
+            {/* {items.map((item) => (
+              <div key={item.id} >
+                {item.links.map((link, index) => (
+                  <div className='bg-[#1A1A1A] text-white rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]' key={index}>
+                    <Link href={link.url}>
+                      <div className='flex items-center gap-2'>
+                        <BsGithub />
+                        <p className='text-base font-normal'>{link.platform}</p>
+                      </div>
+                      <FaArrowRight />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            ))} */}
+
+            {/* <div className='bg-red text-white p-3 rounded-lg mb-5 cursor-pointer flex items-center justify-between w-[250px]'>
+              <div className='flex items-center gap-2'>
+                <FaYoutube />
+                <p className='text-base font-normal'>Youtube</p>
+              </div>
+              <FaArrowRight />
+            </div>
+            <div className='bg-blue text-white p-3 rounded-lg mb-5 cursor-pointer flex items-center justify-between w-[250px]'>
+              <div className='flex items-center gap-2'>
+                <FaLinkedin />
+                <p className='text-base font-normal'>LinkedIn</p>
+              </div>
+              <FaArrowRight />
+            </div> */}
+          </div>
         </div>
         <div className="bg-white lg:w-2/3 w-full rounded-xl">
           <div className="sm:p-10 p-5">
@@ -248,6 +302,7 @@ export default function Home() {
                           type="url" 
                           value={link.url}
                           onChange={(e) => handleUrlChange(e, link.id)}
+                          onBlur={(e) => validateUrl(e, link.id)}
                           placeholder="e.g. https://www.github.com/johnappleseed"
                           className="pl-9 pr-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                         />

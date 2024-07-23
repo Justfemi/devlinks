@@ -19,6 +19,10 @@ const config: Config = {
         'light-grey': '#fafafa',
         'dark-grey': '#333333',
         'red': '#FF3939',
+        'blue': '#2D68FF',
+        'black': '#1A1A1A',
+        'green': '#008000',
+        'brown': '#964B00',
       },
       borderRadius: {
         'custom-32': '32px',
