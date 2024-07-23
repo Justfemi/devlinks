@@ -1,12 +1,44 @@
 "use client"
+import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import profile from "../../../public/images/profile.svg";
-import { BsGithub } from 'react-icons/bs';
+import { BsGithub, BsTwitter, BsFacebook, BsLinkedin  } from 'react-icons/bs';
 import { FaArrowRight, FaLinkedin, FaYoutube } from 'react-icons/fa';
+import { db } from "../../../firebase";
+import { collection, doc, getDocs, QuerySnapshot, DocumentData} from "@firebase/firestore";
+
+interface Links {
+  platform: string;
+  url: string;
+}
+
+interface Item {
+  id: string;
+  links: Links[];
+}
 
 export default function Preview() {
   const router = useRouter();
+  const [items, setItems] = useState<Item[]>([]);
+
+  const platformDetails: Record<string, { icon: JSX.Element, color: string }> = {
+    Github: { icon: <BsGithub />, color: 'bg-black' },
+    Twitter: { icon: <BsTwitter />, color: 'bg-red' },
+    Facebook: { icon: <BsFacebook />, color: 'bg-blue' },
+    LinkedIn: { icon: <BsLinkedin />, color: 'bg-green' },
+    Youtube: { icon: <FaYoutube />, color: 'bg-brown' },
+  };
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(collection(db, "items"));
+      const itemsData: Item[] = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Item));
+      setItems(itemsData);
+    };
+
+    fetchItems();
+  }, []);
 
   return (
     <main className="sm:bg-light-grey bg-white">
@@ -26,35 +58,40 @@ export default function Preview() {
           <div>
             <Image
               src={profile}
-              alt="sample progfile picture"
+              alt="sample profile picture"
               className='mx-auto mb-6'
+              priority
             />
           </div>
           <h2 className="font-bold text-[32px] text-dark-grey">Ben Wright</h2>
           <p className='mb-14 text-base font-normal'>ben@example.com</p>
 
-          <div className='bg-[#1A1A1A] text-white p-4 rounded-lg mb-5 cursor-pointer flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <BsGithub />
-              <p className='text-base font-normal'>Github</p>
-            </div>
-            <FaArrowRight />
-          </div>
+          <div>
+            {items.map((item) => (
+              <div key={item.id}>
+                {item.links.map((link, index) => {
+                  const platformDetail = platformDetails[link.platform] || { icon: null, color: 'bg-white' };
 
-          <div className='bg-[#EE3939] text-white p-4 rounded-lg mb-5 cursor-pointer flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <FaYoutube />
-              <p className='text-base font-normal'>Youtube</p>
-            </div>
-            <FaArrowRight />
-          </div>
+                  return (
+                    <div
+                      className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-full`}
+                      key={index}
+                    >
+                      {/* <Link href={link.url} passHref> */}
+                      <div className='flex items-center gap-2'>
+                        {platformDetail.icon}
+                        <p className='text-base font-normal'>{link.platform}</p>
+                      </div>
 
-          <div className='bg-[#2D68FF] text-white p-4 rounded-lg mb-5 cursor-pointer flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <FaLinkedin />
-              <p className='text-base font-normal'>LinkedIn</p>
-            </div>
-            <FaArrowRight />
+                      <div>
+                        <FaArrowRight />
+                      </div>
+                      {/* </Link> */}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 "use client"
 import { useRef, useState, useEffect } from "react";
+// import { useRouter } from "next/router";
 import ProfileHeader from "../../components/ProfileHeader";
 import Image from "next/image";
 import empty from "../../../public/images/home-empty.svg";
@@ -26,6 +27,7 @@ export default function Profile() {
   const [imageURL, setImageURL] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [items, setItems] = useState<Item[]>([]);
+  // const router = useRouter();
 
   const handleButtonClick = () => {
     if (fileInputRef.current) {
@@ -34,12 +36,12 @@ export default function Profile() {
   };
 
   const platformDetails: Record<string, { icon: JSX.Element, color: string }> = {
-  Github: { icon: <BsGithub />, color: 'bg-black' },
-  Twitter: { icon: <BsTwitter />, color: 'bg-red' },
-  Facebook: { icon: <BsFacebook />, color: 'bg-blue' },
-  LinkedIn: { icon: <BsLinkedin />, color: 'bg-green' },
-  Youtube: { icon: <FaYoutube />, color: 'bg-brown' },
-};
+    Github: { icon: <BsGithub />, color: 'bg-black' },
+    Twitter: { icon: <BsTwitter />, color: 'bg-red' },
+    Facebook: { icon: <BsFacebook />, color: 'bg-blue' },
+    LinkedIn: { icon: <BsLinkedin />, color: 'bg-green' },
+    Youtube: { icon: <FaYoutube />, color: 'bg-brown' },
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -80,6 +82,7 @@ export default function Profile() {
                       <div
                         className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]`}
                         key={index}
+                        // onClick={() => router.push('/preview')}
                       >
                         {/* <Link href={link.url} passHref> */}
                         <div className='flex items-center gap-2'>
@@ -96,44 +99,6 @@ export default function Profile() {
                   })}
                 </div>
               ))}
-            {/* {items.map((item) => (
-              <div key={item.id} >
-                {item.links.map((link, index) => (
-                  <div className='bg-[#1A1A1A] text-white rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]' key={index}>
-                    <Link href={link.url}>
-                      <div className='flex items-center gap-2'>
-                        {platformDetail.icon}
-                        <p className='text-base font-normal'>{link.platform}</p>
-                      </div>
-                      <FaArrowRight />
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            ))} */}
-              {/* HARDCORDED BUTTONS */}
-              {/* <div className='bg-[#1A1A1A] text-white rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]'>
-                <div className='flex items-center gap-2'>
-                  <BsGithub />
-                  <p className='text-base font-normal'>Github</p>
-                </div>
-                <FaArrowRight />
-              </div>
-
-              <div className='bg-red text-white p-3 rounded-lg mb-5 cursor-pointer flex items-center justify-between w-[250px]'>
-                <div className='flex items-center gap-2'>
-                  <FaYoutube />
-                  <p className='text-base font-normal'>Youtube</p>
-                </div>
-                <FaArrowRight />
-              </div>
-              <div className='bg-blue text-white p-3 rounded-lg mb-5 cursor-pointer flex items-center justify-between w-[250px]'>
-                <div className='flex items-center gap-2'>
-                  <FaLinkedin />
-                  <p className='text-base font-normal'>LinkedIn</p>
-                </div>
-                <FaArrowRight />
-              </div> */}
             </div>
           </div>
           <div className="bg-white lg:w-2/3 w-full rounded-xl">

@@ -47,6 +47,14 @@ export default function Home() {
   const [error, setError] = useState<string>('');
   const [availablePlatforms, setAvailablePlatforms] = useState(platforms);
   const [items, setItems] = useState<Item[]>([]);
+
+  const platformDetails: Record<string, { icon: JSX.Element, color: string }> = {
+    Github: { icon: <BsGithub />, color: 'bg-black' },
+    Twitter: { icon: <BsTwitter />, color: 'bg-red' },
+    Facebook: { icon: <BsFacebook />, color: 'bg-blue' },
+    LinkedIn: { icon: <BsLinkedin />, color: 'bg-green' },
+    Youtube: { icon: <FaYoutube />, color: 'bg-brown' },
+  };
   
   const handleAddLink = (event: MouseEvent<HTMLButtonElement>): void => {
     event.preventDefault();
@@ -192,49 +200,32 @@ export default function Home() {
             className="mx-auto my-14"
             priority
           />
-          {/* <ul>
+          <div className="absolute top-3/4 transform -translate-y-10 left-18 translate-x-16">
             {items.map((item) => (
-              <li key={item.id}>
-                {item.links.map((link, index) => (
-                  <div key={index}>
-                    <p>Platform - {link.platform}</p>
-                    <p>URL - {link.url}</p>
-                  </div>
-                ))}
-              </li>
-            ))}
-          </ul> */}
-          <div className="absolute top-1/2 transform -translate-y-11 left-18 translate-x-16">
-            {/* {items.map((item) => (
-              <div key={item.id} >
-                {item.links.map((link, index) => (
-                  <div className='bg-[#1A1A1A] text-white rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]' key={index}>
-                    <Link href={link.url}>
+              <div key={item.id}>
+                {item.links.map((link, index) => {
+                  const platformDetail = platformDetails[link.platform] || { icon: null, color: 'bg-white' };
+
+                  return (
+                    <div
+                      className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]`}
+                      key={index}
+                    >
+                      {/* <Link href={link.url} passHref> */}
                       <div className='flex items-center gap-2'>
-                        <BsGithub />
+                        {platformDetail.icon}
                         <p className='text-base font-normal'>{link.platform}</p>
                       </div>
-                      <FaArrowRight />
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            ))} */}
 
-            {/* <div className='bg-red text-white p-3 rounded-lg mb-5 cursor-pointer flex items-center justify-between w-[250px]'>
-              <div className='flex items-center gap-2'>
-                <FaYoutube />
-                <p className='text-base font-normal'>Youtube</p>
+                      <div>
+                        <FaArrowRight />
+                      </div>
+                      {/* </Link> */}
+                    </div>
+                  );
+                })}
               </div>
-              <FaArrowRight />
-            </div>
-            <div className='bg-blue text-white p-3 rounded-lg mb-5 cursor-pointer flex items-center justify-between w-[250px]'>
-              <div className='flex items-center gap-2'>
-                <FaLinkedin />
-                <p className='text-base font-normal'>LinkedIn</p>
-              </div>
-              <FaArrowRight />
-            </div> */}
+            ))}
           </div>
         </div>
         <div className="bg-white lg:w-2/3 w-full rounded-xl">
