@@ -250,6 +250,7 @@ export default function Profile() {
                     onChange={(e) => setFirstName(e.target.value)}
                     className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                   />
+                  {errors.firstName && <p className="text-red text-sm">{errors.firstName}</p>}
                 </div>
 
                 <div className="flex sm:items-center items-start justify-between gap-4 mb-3 sm:flex-row flex-col">
@@ -261,6 +262,7 @@ export default function Profile() {
                     onChange={(e) => setLastName(e.target.value)}
                     className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                   />
+                  {errors.lasstName && <p className="text-red text-sm">{errors.lastName}</p>}
                 </div>
 
                 <div className="flex sm:items-center items-start justify-between gap-4 mb-3 sm:flex-row flex-col">
@@ -272,6 +274,7 @@ export default function Profile() {
                     onChange={(e) => setEmail(e.target.value)}
                     className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                   />
+                  {errors.email && <p className="text-red text-sm">{errors.email}</p>}
                 </div>
               </div>
             </div>
