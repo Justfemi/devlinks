@@ -80,11 +80,10 @@ export default function Profile() {
                     const platformDetail = platformDetails[link.platform] || { icon: null, color: 'bg-white' };
 
                     return (
-                      <div
-                        className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]`}
-                        key={index}
-                      >
-                        <Link href={link.url} passHref>
+                      <Link href={link.url} passHref key={index}>
+                        <div
+                          className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]`}
+                        >
                           <div className='flex items-center gap-2'>
                             {platformDetail.icon}
                             <p className='text-base font-normal'>{link.platform}</p>
@@ -93,8 +92,8 @@ export default function Profile() {
                           <div>
                             <FaArrowRight />
                           </div>
-                        </Link>
-                      </div>
+                        </div>
+                      </Link>
                     );
                   })}
                 </div>

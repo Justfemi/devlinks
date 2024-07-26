@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
+import Link from "next/link";
 import profile from "../../../public/images/profile.svg";
 import { BsGithub, BsTwitter, BsFacebook, BsLinkedin  } from 'react-icons/bs';
 import { FaArrowRight, FaLinkedin, FaYoutube } from 'react-icons/fa';
@@ -73,21 +74,20 @@ export default function Preview() {
                   const platformDetail = platformDetails[link.platform] || { icon: null, color: 'bg-white' };
 
                   return (
-                    <div
-                      className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-full`}
-                      key={index}
-                    >
-                      {/* <Link href={link.url} passHref> */}
-                      <div className='flex items-center gap-2'>
-                        {platformDetail.icon}
-                        <p className='text-base font-normal'>{link.platform}</p>
-                      </div>
+                    <Link href={link.url} passHref key={index}>
+                      <div
+                        className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-full`}
+                      >
+                        <div className='flex items-center gap-2'>
+                          {platformDetail.icon}
+                          <p className='text-base font-normal'>{link.platform}</p>
+                        </div>
 
-                      <div>
-                        <FaArrowRight />
+                        <div>
+                          <FaArrowRight />
+                        </div>
                       </div>
-                      {/* </Link> */}
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
