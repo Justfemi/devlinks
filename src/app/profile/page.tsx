@@ -41,7 +41,7 @@ export default function Profile() {
   const [email, setEmail] = useState('');
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  // const [errors, setErrors] = useState<{ [key: string]: string }>({});
   // const router = useRouter();
 
   const handleButtonClick = () => {
@@ -90,22 +90,22 @@ export default function Profile() {
     fetchProfiles();
   }, []);
 
-  const validateInputs = () => {
-    const newErrors: { [key: string]: string } = {};
-    if (!firstName) newErrors.firstName = "First name can't be empty";
-    if (!lastName) newErrors.lastName = "Last name can't be empty";
-    if (!email) newErrors.email = "Email can't be empty";
-    return newErrors;
-  };
+  // const validateInputs = () => {
+  //   const newErrors: { [key: string]: string } = {};
+  //   if (!firstName) newErrors.firstName = "First name can't be empty";
+  //   if (!lastName) newErrors.lastName = "Last name can't be empty";
+  //   if (!email) newErrors.email = "Email can't be empty";
+  //   return newErrors;
+  // };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    const validationErrors = validateInputs();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+    // const validationErrors = validateInputs();
+    // if (Object.keys(validationErrors).length > 0) {
+    //   setErrors(validationErrors);
+    //   return;
+    // }
 
     if (!profilePicture) {
       alert('Please upload a profile picture');
@@ -131,7 +131,6 @@ export default function Profile() {
       setLastName('');
       setEmail('');
       setProfilePicture(null);
-      setErrors({});
     } catch (error) {
       console.error('Error saving user profile:', error);
       toast.error("Error updating profile, please try again");
@@ -251,7 +250,7 @@ export default function Profile() {
                       onChange={(e) => setFirstName(e.target.value)}
                       className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                     />
-                    {errors.firstName && <p className="text-red text-sm">{errors.firstName}</p>}
+                    {/* {errors.firstName && <p className="text-red text-sm">{errors.firstName}</p>} */}
                   </div>
                 </div>
 
@@ -265,7 +264,7 @@ export default function Profile() {
                       onChange={(e) => setLastName(e.target.value)}
                       className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                     />
-                    {errors.lasstName && <p className="text-red text-sm">{errors.lastName}</p>}
+                    {/* {errors.lastName && <p className="text-red text-sm">{errors.lastName}</p>} */}
                   </div>
                 </div>
 
@@ -279,7 +278,7 @@ export default function Profile() {
                       onChange={(e) => setEmail(e.target.value)}
                       className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                     />
-                    {errors.email && <p className="text-red text-sm">{errors.email}</p>}
+                    {/* {errors.email && <p className="text-red text-sm">{errors.email}</p>} */}
                   </div>
                 </div>
               </div>
