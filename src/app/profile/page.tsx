@@ -242,44 +242,35 @@ export default function Profile() {
               <div className="mt-6 sm:p-5 p-3 bg-light-grey rounded-xl">
                 <div className="flex sm:items-center items-start justify-between gap-4 mb-3 sm:flex-row flex-col">
                   <p className="text-base font-normal text-grey sm:w-60 w-auto">First name * </p>
-                  <div className="flex flex-col">
-                    <input 
-                      type="text"
-                      placeholder="e.g. John"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
-                    />
-                    {/* {errors.firstName && <p className="text-red text-sm">{errors.firstName}</p>} */}
-                  </div>
+                  <input 
+                    type="text"
+                    placeholder="e.g. John"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
+                  />
                 </div>
 
                 <div className="flex sm:items-center items-start justify-between gap-4 mb-3 sm:flex-row flex-col">
                   <p className="text-base font-normal text-grey sm:w-60 w-auto">Last name * </p>
-                  <div className="flex flex-col">
-                    <input 
-                      type="text"
-                      placeholder="e.g. Appleseed"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
-                    />
-                    {/* {errors.lastName && <p className="text-red text-sm">{errors.lastName}</p>} */}
-                  </div>
+                  <input 
+                    type="text"
+                    placeholder="e.g. Appleseed"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
+                  />
                 </div>
 
                 <div className="flex sm:items-center items-start justify-between gap-4 mb-3 sm:flex-row flex-col">
                   <p className="text-base font-normal text-grey sm:w-60 w-auto">Email </p>
-                  <div className="flex flex-col">
-                    <input 
-                      type="email"
-                      placeholder="e.g. email@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
-                    />
-                    {/* {errors.email && <p className="text-red text-sm">{errors.email}</p>} */}
-                  </div>
+                  <input 
+                    type="email"
+                    placeholder="e.g. email@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
+                  />
                 </div>
               </div>
             </div>
