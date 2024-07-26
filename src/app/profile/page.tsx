@@ -1,6 +1,5 @@
 "use client"
-import { useRef, useState, useEffect } from "react";
-// import { useRouter } from "next/router";
+import { useRef, useState, useEffect, FormEvent } from "react";
 import ProfileHeader from "../../components/ProfileHeader";
 import Image from "next/image";
 import empty from "../../../public/images/home-empty.svg";
@@ -10,8 +9,9 @@ import { FaArrowRight, FaLinkedin, FaYoutube } from 'react-icons/fa';
 import { IoImageOutline } from "react-icons/io5";
 import Link from "next/link";
 import { db, storage } from "../../../firebase";
-import { collection, doc, getDocs, addDoc, QuerySnapshot, DocumentData} from "@firebase/firestore";
+import { collection, doc, getDocs, addDoc } from "@firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from '@firebase/storage';
+import { toast } from 'react-toastify';
 
 interface Links {
   platform: string;
@@ -23,11 +23,25 @@ interface Item {
   links: Links[];
 }
 
+interface UserProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  profilePictureURL: string;
+}
+
 export default function Profile() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [imageURL, setImageURL] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [items, setItems] = useState<Item[]>([]);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [profiles, setProfiles] = useState<UserProfile[]>([]);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   // const router = useRouter();
 
   const handleButtonClick = () => {
@@ -49,18 +63,80 @@ export default function Profile() {
     if (file) {
       const url = URL.createObjectURL(file);
       setImageURL(url);
+      setProfilePicture(file);
     }
   };
 
   useEffect(() => {
     const fetchItems = async () => {
-      const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(collection(db, "items"));
+      const querySnapshot = await getDocs(collection(db, "items"));
       const itemsData: Item[] = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Item));
       setItems(itemsData);
     };
 
     fetchItems();
   }, []);
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      const querySnapshot = await getDocs(collection(db, 'users'));
+      const profilesData: UserProfile[] = [];
+      querySnapshot.forEach((doc) => {
+        profilesData.push({ id: doc.id, ...doc.data() } as UserProfile);
+      });
+      setProfiles(profilesData);
+    };
+
+    fetchProfiles();
+  }, []);
+
+  const validateInputs = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!firstName) newErrors.firstName = "First name can't be empty";
+    if (!lastName) newErrors.lastName = "Last name can't be empty";
+    if (!email) newErrors.email = "Email can't be empty";
+    return newErrors;
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    const validationErrors = validateInputs();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    if (!profilePicture) {
+      alert('Please upload a profile picture');
+      return;
+    }
+
+    try {
+      // Upload profile picture to Firebase Storage
+      const profilePictureRef = ref(storage, `profile_pictures/${profilePicture.name}`);
+      await uploadBytes(profilePictureRef, profilePicture);
+      const profilePictureURL = await getDownloadURL(profilePictureRef);
+
+      // Save user profile to Firestore
+      await addDoc(collection(db, 'users'), {
+        firstName,
+        lastName,
+        email,
+        profilePictureURL,
+      });
+
+      toast.success('User profile saved successfully!');
+      setFirstName('');
+      setLastName('');
+      setEmail('');
+      setProfilePicture(null);
+      setErrors({});
+    } catch (error) {
+      console.error('Error saving user profile:', error);
+      toast.error("Error updating profile, please try again");
+    }
+  };
 
   return (
     <>
@@ -74,7 +150,23 @@ export default function Profile() {
               className="mx-auto my-10"
             />
             <div className="absolute top-1/2 transform -translate-y-11 left-18 translate-x-16">
-              {items.slice(0, 5).map((item) => (
+              {profiles.map((profile) => (
+                <div key={profile.id}>
+                  <h1>Profile Test</h1>
+                  <p>{profile.firstName}</p>
+                  <p>{profile.lastName}</p>
+                  <p>{profile.email}</p>
+                  <div className="w-[200px] h-[200px] rounded-full border-2 border-purple">
+                    <Image
+                      src={profile.profilePictureURL} 
+                      alt={`${profile.firstName}'s profile`} 
+                      className="w-full object-cover"
+                      priority
+                    />
+                  </div>
+                </div>
+              ))}
+              {items.map((item) => (
                 <div key={item.id}>
                   {item.links.map((link, index) => {
                     const platformDetail = platformDetails[link.platform] || { icon: null, color: 'bg-white' };
@@ -154,6 +246,8 @@ export default function Profile() {
                   <input 
                     type="text"
                     placeholder="e.g. John"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                     className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                   />
                 </div>
@@ -163,6 +257,8 @@ export default function Profile() {
                   <input 
                     type="text"
                     placeholder="e.g. Appleseed"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                     className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                   />
                 </div>
@@ -172,13 +268,18 @@ export default function Profile() {
                   <input 
                     type="email"
                     placeholder="e.g. email@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="px-4 py-3 border border-[#D9D9D9] rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom"
                   />
                 </div>
               </div>
             </div>
             <div className="border-t border-light-grey flex py-5 px-10 sm:justify-end justify-center">
-              <button className="bg-purple rounded-lg px-6 py-2.5 text-white text-base sm:w-auto w-full font-semibold hover:bg-purple-hover hover:shadow-custom">
+              <button 
+                className="bg-purple rounded-lg px-6 py-2.5 text-white text-base sm:w-auto w-full font-semibold hover:bg-purple-hover hover:shadow-custom"
+                onClick={handleSubmit}
+              >
                 Save
               </button>
             </div>
