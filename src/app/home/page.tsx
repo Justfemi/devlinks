@@ -6,7 +6,7 @@ import empty from "../../../public/images/home-empty.svg";
 import phone from "../../../public/images/phoneLayout.svg";
 import { MdDragHandle } from "react-icons/md";
 import { FaLink } from "react-icons/fa";
-import { Link } from "next/link";
+import Link from "next/link";
 import { toast } from 'react-toastify';
 import { BsGithub, BsTwitter, BsFacebook, BsLinkedin, BsChevronDown, BsChevronUp } from 'react-icons/bs';
 import { FaYoutube, FaArrowRight, FaLinkedin } from 'react-icons/fa';
