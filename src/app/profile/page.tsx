@@ -8,9 +8,10 @@ import phone from "../../../public/images/phoneLayout.svg";
 import { BsGithub, BsTwitter, BsFacebook, BsLinkedin } from 'react-icons/bs';
 import { FaArrowRight, FaLinkedin, FaYoutube } from 'react-icons/fa';
 import { IoImageOutline } from "react-icons/io5";
-// import Link from "next/link";
-import { db } from "../../../firebase";
-import { collection, doc, getDocs, QuerySnapshot, DocumentData} from "@firebase/firestore";
+import Link from "next/link";
+import { db, storage } from "../../../firebase";
+import { collection, doc, getDocs, addDoc, QuerySnapshot, DocumentData} from "@firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from '@firebase/storage';
 
 interface Links {
   platform: string;
@@ -82,18 +83,17 @@ export default function Profile() {
                       <div
                         className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]`}
                         key={index}
-                        // onClick={() => router.push('/preview')}
                       >
-                        {/* <Link href={link.url} passHref> */}
-                        <div className='flex items-center gap-2'>
-                          {platformDetail.icon}
-                          <p className='text-base font-normal'>{link.platform}</p>
-                        </div>
+                        <Link href={link.url} passHref>
+                          <div className='flex items-center gap-2'>
+                            {platformDetail.icon}
+                            <p className='text-base font-normal'>{link.platform}</p>
+                          </div>
 
-                        <div>
-                          <FaArrowRight />
-                        </div>
-                        {/* </Link> */}
+                          <div>
+                            <FaArrowRight />
+                          </div>
+                        </Link>
                       </div>
                     );
                   })}

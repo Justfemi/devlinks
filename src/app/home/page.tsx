@@ -6,7 +6,8 @@ import empty from "../../../public/images/home-empty.svg";
 import phone from "../../../public/images/phoneLayout.svg";
 import { MdDragHandle } from "react-icons/md";
 import { FaLink } from "react-icons/fa";
-// import { Link } from "next/link";
+import { Link } from "next/link";
+import { toast } from 'react-toastify';
 import { BsGithub, BsTwitter, BsFacebook, BsLinkedin, BsChevronDown, BsChevronUp } from 'react-icons/bs';
 import { FaYoutube, FaArrowRight, FaLinkedin } from 'react-icons/fa';
 import { useState, useEffect, FormEvent, MouseEvent, ChangeEvent, FocusEvent} from "react";
@@ -173,9 +174,11 @@ export default function Home() {
       const docRef = await addDoc(collection(db, 'items'), {
         links,
       })
-      console.log("Document with ID: ", docRef.id);
+      // console.log("Document with ID: ", docRef.id);
+      toast.success("Link submitted successfully");
     } catch (error) {
-      console.error('An error occurred:', error);
+      // console.error('An error occurred:', error);
+      toast.error("Eror submitting link, please try again!");
     }
   };
 
@@ -201,27 +204,26 @@ export default function Home() {
             priority
           />
           <div className="absolute top-3/4 transform -translate-y-10 left-18 translate-x-16">
-            {items.slice(0, 5).map((item) => (
+            {items.map((item) => (
               <div key={item.id}>
-                {item.links.map((link, index) => {
+                {item.links.slice(0, 5).map((link, index) => {
                   const platformDetail = platformDetails[link.platform] || { icon: null, color: 'bg-white' };
 
                   return (
-                    <div
-                      className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]`}
-                      key={index}
-                    >
-                      {/* <Link href={link.url} passHref> */}
-                      <div className='flex items-center gap-2'>
-                        {platformDetail.icon}
-                        <p className='text-base font-normal'>{link.platform}</p>
-                      </div>
+                    <Link href={link.url} passHref key={index}>
+                      <div
+                        className={`text-white ${platformDetail.color} rounded-lg mb-5 p-3 cursor-pointer flex items-center justify-between w-[250px]`}
+                      >
+                        <div className='flex items-center gap-2'>
+                          {platformDetail.icon}
+                          <p className='text-base font-normal'>{link.platform}</p>
+                        </div>
 
-                      <div>
-                        <FaArrowRight />
+                        <div>
+                          <FaArrowRight />
+                        </div>
                       </div>
-                      {/* </Link> */}
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
