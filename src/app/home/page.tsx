@@ -127,7 +127,7 @@ const Home: React.FC = () => {
         setIsAddingNote(false);
       }
     }
-  };  
+  };
 
   return (
     <>
@@ -138,7 +138,7 @@ const Home: React.FC = () => {
 
         <div onClick={handleLogout} className="cursor-pointer">
           <LogOut className="text-purple"/>
-        </Link>
+        </div>
       </header>
       <div className="my-6 w-full flex flex-col justify-center items-center p-2">
         <textarea
