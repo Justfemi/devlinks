@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { redirect } from 'next/navigation';
 import NoteCard from '@/components/NoteCard'
 import EditModal from '@/components/EditNote';
 import Image from 'next/image';
