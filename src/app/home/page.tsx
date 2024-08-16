@@ -8,6 +8,7 @@ import EmptyImg from "../../../public/images/emptynote.png";
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { db } from "../../../firebase";
+import { onAuthStateChanged } from 'firebase/auth';
 import { 
   collection, 
   addDoc, 
@@ -29,6 +30,16 @@ const Home: React.FC = () => {
 
   const auth = getAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push('/');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
     try {
