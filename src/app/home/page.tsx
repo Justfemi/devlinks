@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import NoteCard from '@/components/NoteCard'
 import EditModal from '@/components/EditNote';
 import Image from 'next/image';
@@ -14,6 +15,7 @@ import {
   updateDoc, 
   getDocs, 
   deleteDoc } from "@firebase/firestore";
+  import { getAuth, signOut } from 'firebase/auth';
 
 const Home: React.FC = () => {
   const [notes, setNotes] = useState<{ id: string; content: string }[]>([]);
@@ -24,6 +26,18 @@ const Home: React.FC = () => {
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [isSavingNote, setIsSavingNote] = useState(false);
   const [isDeletingNote, setIsDeletingNote] = useState(false);
+
+  const auth = getAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out: ', error);
+    }
+  };
 
   const handleEdit = (index: number) => {
     setCurrentNoteIndex(index);
@@ -111,8 +125,8 @@ const Home: React.FC = () => {
           <h1 className='cursor-pointer text-xl'>Note<span className='text-purple'>App</span></h1>
         </Link>
 
-        <Link href="/">
-          <LogOut />
+        <div onClick={handleLogout} className="cursor-pointer">
+          <LogOut className="text-purple"/>
         </Link>
       </header>
       <div className="my-6 w-full flex flex-col justify-center items-center p-2">
