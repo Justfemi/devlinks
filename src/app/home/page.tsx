@@ -32,6 +32,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const fetchNotes = async () => {
+      setIsFetchingNotes(true);
       try {
         const querySnapshot = await getDocs(collection(db, 'notes'));
         const notesList = querySnapshot.docs.map((doc) => ({
@@ -41,6 +42,8 @@ const Home: React.FC = () => {
         setNotes(notesList);
       } catch (e) {
         console.error('Error fetching documents: ', e);
+      } finally {
+      setIsFetchingNotes(false);
       }
     };
 
@@ -62,6 +65,12 @@ const Home: React.FC = () => {
   }, [auth]);
 
   if (isAuthenticated === null) {
+    return (
+      <Preloader />
+    );
+  }
+
+  if (isFetchingNotes) {
     return (
       <Preloader />
     );
@@ -116,45 +125,6 @@ const Home: React.FC = () => {
     }
   };
 
-  // const fetchNotes = async () => {
-  //   setIsFetchingNotes(true);
-  //   try {
-  //     const querySnapshot = await getDocs(collection(db, 'notes'));
-  //     const notesList = querySnapshot.docs.map((doc) => ({
-  //       id: doc.id,
-  //       content: doc.data().content,
-  //     }));
-  //     setNotes(notesList);
-  //   } catch (e) {
-  //     console.error('Error fetching documents: ', e);
-  //   } finally {
-  //     setIsFetchingNotes(false);
-  //   }
-  // };
-  
-  // useEffect(() => {
-  //   fetchNotes();
-  // }, []);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  // useEffect(() => {
-  //   const fetchNotes = async () => {
-  //     try {
-  //       const querySnapshot = await getDocs(collection(db, 'notes'));
-  //       const notesList = querySnapshot.docs.map((doc) => ({
-  //         id: doc.id,
-  //         content: doc.data().content,
-  //       }));
-  //       setNotes(notesList);
-  //     } catch (e) {
-  //       console.error('Error fetching documents: ', e);
-  //     }
-  //   };
-
-  //   if (isAuthenticated) {
-  //     fetchNotes();
-  //   }
-  // }, [isAuthenticated]);
-  
   const handleAddNote = async () => {
     if (newNote.trim()) {
       setIsAddingNote(true);
