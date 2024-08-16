@@ -1,11 +1,6 @@
 "use client"
-import Image from "next/image";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import logo from "../../public/images/logo.svg";
-import logoText from "../../public/images/devlink.svg";
-import lock from "../../public/images/padlock.svg";
-import envelope from "../../public/images/mail.svg";
 import { FormEvent, useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "../../firebase";
@@ -91,80 +86,46 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA]">
-      <div>
-        <div className="flex items-center justify-center gap-1 mb-[50px]">
-          <div className="w-7 h-7">
-            <Image 
-              src={logo}
-              alt="devlink logo"
-              className="w-full h-full object-cover"
+      <div className="bg-white sm:p-6 p-3 rounded-xl sm:w-[450px] w-[95%]">
+        <form onSubmit={handleSubmit}>
+          <div className="relative flex flex-col">
+            <label className={`${errors.email ? 'text-red' : 'text-dark-grey'} font-normal text-sm mb-1`}>Email Address</label>
+            <input 
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formState.email}
+              onChange={handleChange}
+              className={`p-3 border ${errors.email ? 'border-red' : 'border-[#D9D9D9]'} rounded-lg w-full focus:outline-none focus:border-purple`}
             />
+              {errors.email && <p className="text-sm mt-1 text-red-500">{errors.email}</p>}
           </div>
 
-          <div className="w-25 h-4">
-            <Image
-              src={logoText}
-              alt="devlink"
-              className="w-full h-full object-cover"
+          <div className="relative flex flex-col my-6">
+            <label className={`${errors.password ? 'text-red' : 'text-dark-grey'} font-normal text-sm mb-1`}>Password</label>
+            <input 
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formState.password}
+              onChange={handleChange}
+              className={`p-3 border ${errors.password ? 'border-red' : 'border-[#D9D9D9]'} rounded-lg w-full focus:outline-none focus:border-purple`}
             />
+            {errors.password && <p className="text-sm mt-1 text-red-500">{errors.password}</p>}
           </div>
-        </div>
 
-        <div className="bg-white sm:p-10 p-6 rounded-xl">
-          <h3 className="text-[#333] font-bold text-[32px] mb-2">Login</h3>
-          <p className="text-[#737373] font-normal text-base mb-4">Add your details below to get back into the app</p>
-          <form onSubmit={handleSubmit}>
-            <div className="relative flex flex-col">
-              <label className={`${errors.email ? 'text-red' : 'text-dark-grey'} font-normal text-xs mb-1`}>Email Address</label>
-              <div className="absolute bottom-1/4 transform -translate-y-1/6 left-0 pl-3 flex items-center pointer-events-none">
-                <Image 
-                  src={envelope}
-                  alt="envelope icon for email"
-                />
-              </div>
-              <input 
-                type="email"
-                name="email"
-                placeholder="e.g. alex@email.com"
-                value={formState.email}
-                onChange={handleChange}
-                className={`pl-9 pr-4 py-3 border ${errors.email ? 'border-red' : 'border-[#D9D9D9]'} rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom`}
-              />
-               {errors.email && <p className="absolute right-3 bottom-1/4 transform -translate-y-1/6 text-red">{errors.email}</p>}
-            </div>
+          <button 
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-purple text-white p-3 rounded-lg font-normal text-base mb-6 hover:shadow-custom hover:bg-[#BEADFF]"
+          >
+            {isSubmitting ? "Submitting..." : "Login"}
+          </button>
 
-            <div className="relative flex flex-col my-6">
-              <label className={`${errors.password ? 'text-red' : 'text-dark-grey'} font-normal text-xs mb-1`}>Password</label>
-              <div className="absolute bottom-1/4 transform -translate-y-1/6 left-0 pl-3 flex items-center pointer-events-none">
-                <Image 
-                  src={lock}
-                  alt="lock icon for password"
-                />
-              </div>
-              <input 
-                type="password"
-                name="password"
-                placeholder="At least 8 characters"
-                value={formState.password}
-                onChange={handleChange}
-                className={`pl-9 pr-4 py-3 border ${errors.password ? 'border-red' : 'border-[#D9D9D9]'} rounded-lg w-full focus:outline-none focus:border-purple focus:shadow-custom`}
-              />
-              {errors.password && <p className="absolute right-3 bottom-1/4 transform -translate-y-1/6 text-red">{errors.password}</p>}
-            </div>
-
-            <button 
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-purple text-white p-3 rounded-lg font-normal text-base mb-6 hover:shadow-custom hover:bg-[#BEADFF]"
-            >
-              {isSubmitting ? "Submitting..." : "Login"}
-            </button>
-
-            <p className="text-center font-normal text-base text-[#737373]">Don&apos;t have an account? 
-              <Link href="/sign-up" className="text-purple ml-1">Create acoount</Link>
-            </p>
-          </form>
-        </div>
+          <p className="text-center font-normal text-base text-[#737373]">Don&apos;t have an account? 
+            <Link href="/sign-up" className="text-purple ml-1">Create acoount</Link>
+          </p>
+        </form>
       </div>
     </div>
   );
