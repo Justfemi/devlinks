@@ -24,6 +24,7 @@ const Home: React.FC = () => {
   const [isFetchingNotes, setIsFetchingNotes] = useState(false);
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [isSavingNote, setIsSavingNote] = useState(false);
+  const [isDeletingNote, setIsDeletingNote] = useState(false);
 
   const auth = getAuth();
   
