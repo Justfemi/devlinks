@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { redirect } from 'next/navigation';
 import NoteCard from '@/components/NoteCard'
 import EditModal from '@/components/EditNote';
 import Image from 'next/image';
@@ -8,7 +8,6 @@ import EmptyImg from "../../../public/images/emptynote.png";
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { db } from "../../../firebase";
-import { onAuthStateChanged } from 'firebase/auth';
 import { 
   collection, 
   addDoc, 
@@ -16,7 +15,7 @@ import {
   updateDoc, 
   getDocs, 
   deleteDoc } from "@firebase/firestore";
-  import { getAuth, signOut } from 'firebase/auth';
+import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
 
 const Home: React.FC = () => {
   const [notes, setNotes] = useState<{ id: string; content: string }[]>([]);
@@ -26,25 +25,23 @@ const Home: React.FC = () => {
   const [isFetchingNotes, setIsFetchingNotes] = useState(false);
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [isSavingNote, setIsSavingNote] = useState(false);
-  const [isDeletingNote, setIsDeletingNote] = useState(false);
 
   const auth = getAuth();
-  const router = useRouter();
-
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        router.push('/');
+        window.location.href = '/';
       }
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [auth]);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      router.push('/');
+      window.location.href = '/';
     } catch (error) {
       console.error('Error signing out: ', error);
     }
