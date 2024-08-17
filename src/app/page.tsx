@@ -47,8 +47,6 @@ export default function Login() {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    //fm@test.com
-    //0987654321
     setIsSubmitting(true);
     const emailError = validateEmail(formState.email);
     const passwordError = validatePassword(formState.password);
