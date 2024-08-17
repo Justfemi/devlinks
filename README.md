@@ -2,16 +2,24 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+- Clone the repo on your local machine
+```bash
+git clone https://github.com/Justfemi/devlinks.git
+```
 
+- Navigate to the project folder
+```bash
+cd devlinks
+```
+
+- Install dependencies
+```bash
+npm installl
+```
+
+Finally, run the development server:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

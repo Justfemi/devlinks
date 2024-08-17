@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import NoteCard from '@/components/NoteCard'
 import EditModal from '@/components/EditNote';
+import Preloader from '@/components/Preloader';
 import Image from 'next/image';
 import EmptyImg from "../../../public/images/emptynote.png";
 import Link from 'next/link';
@@ -25,18 +26,55 @@ const Home: React.FC = () => {
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [isSavingNote, setIsSavingNote] = useState(false);
   const [isDeletingNote, setIsDeletingNote] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const auth = getAuth();
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      setIsFetchingNotes(true);
+      try {
+        const querySnapshot = await getDocs(collection(db, 'notes'));
+        const notesList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          content: doc.data().content,
+        }));
+        setNotes(notesList);
+      } catch (e) {
+        console.error('Error fetching documents: ', e);
+      } finally {
+      setIsFetchingNotes(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchNotes();
+    }
+  }, [isAuthenticated]);
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = '/';
+      } else {
+        setIsAuthenticated(true);
       }
     });
 
     return () => unsubscribe();
   }, [auth]);
+
+  if (isAuthenticated === null) {
+    return (
+      <Preloader />
+    );
+  }
+
+  if (isFetchingNotes) {
+    return (
+      <Preloader />
+    );
+  }
 
   const handleLogout = async () => {
     try {
@@ -87,27 +125,6 @@ const Home: React.FC = () => {
     }
   };
 
-  const fetchNotes = async () => {
-    setIsFetchingNotes(true);
-    try {
-      const querySnapshot = await getDocs(collection(db, 'notes'));
-      const notesList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        content: doc.data().content,
-      }));
-      setNotes(notesList);
-    } catch (e) {
-      console.error('Error fetching documents: ', e);
-    } finally {
-      setIsFetchingNotes(false);
-    }
-  };
-  
-  
-  useEffect(() => {
-    fetchNotes();
-  }, []);
-  
   const handleAddNote = async () => {
     if (newNote.trim()) {
       setIsAddingNote(true);
