@@ -13,7 +13,9 @@ import {
   addDoc, 
   doc, 
   updateDoc, 
-  getDocs, 
+  getDocs,
+  query,
+  where,
   deleteDoc } from "@firebase/firestore";
 import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
 
@@ -27,37 +29,75 @@ const Home: React.FC = () => {
   const [isSavingNote, setIsSavingNote] = useState(false);
   const [isDeletingNote, setIsDeletingNote] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const auth = getAuth();
+
+  // useEffect(() => {
+  //   const fetchNotes = async () => {
+  //     const user = auth.currentUser;
+  //     if (user) {
+  //       setIsFetchingNotes(true);
+  //       try {
+  //         const querySnapshot = await getDocs(collection(db, 'notes'));
+  //         const notesList = querySnapshot.docs
+  //           .filter((doc) => doc.data().userId === user.uid) // Filter notes by userId
+  //           .map((doc) => ({
+  //             id: doc.id,
+  //             content: doc.data().content,
+  //           }));
+  //         setNotes(notesList);
+  //       } catch (e) {
+  //         console.error('Error fetching documents: ', e);
+  //       } finally {
+  //         setIsFetchingNotes(false);
+  //       }
+  //     }
+  //   };
+
+  //   if (isAuthenticated) {
+  //     fetchNotes();
+  //   }
+  // }, [auth.currentUser, isAuthenticated]);
 
   useEffect(() => {
     const fetchNotes = async () => {
       setIsFetchingNotes(true);
       try {
-        const querySnapshot = await getDocs(collection(db, 'notes'));
-        const notesList = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          content: doc.data().content,
-        }));
-        setNotes(notesList);
+        const user = auth.currentUser; // Get the current user
+        if (user) {
+          const q = query(
+            collection(db, "notes"),
+            where("userId", "==", user.uid) // Fetch only the notes for the current user
+          );
+          const querySnapshot = await getDocs(q);
+          const notesList = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            content: doc.data().content,
+          }));
+          setNotes(notesList);
+        } else {
+          console.error("User not authenticated");
+        }
       } catch (e) {
-        console.error('Error fetching documents: ', e);
+        console.error("Error fetching documents: ", e);
       } finally {
-      setIsFetchingNotes(false);
+        setIsFetchingNotes(false);
       }
     };
-
+  
     if (isAuthenticated) {
       fetchNotes();
     }
-  }, [isAuthenticated]);
-  
+  }, [auth.currentUser, isAuthenticated]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = '/';
-      } else {
+      if (user) {
         setIsAuthenticated(true);
+        setUserEmail(user.email);
+      } else {
+        window.location.href = '/';
       }
     });
 
@@ -125,13 +165,32 @@ const Home: React.FC = () => {
     }
   };
 
+  // const handleAddNote = async () => {
+  //   if (newNote.trim()) {
+  //     setIsAddingNote(true);
+  //     try {
+  //       const docRef = await addDoc(collection(db, 'notes'), {
+  //         content: newNote,
+  //         createdAt: new Date(),
+  //       });
+  //       setNotes([...notes, { id: docRef.id, content: newNote }]);
+  //       setNewNote('');
+  //     } catch (e) {
+  //       console.error('Error adding document: ', e);
+  //     } finally {
+  //       setIsAddingNote(false);
+  //     }
+  //   }
+  // };
   const handleAddNote = async () => {
-    if (newNote.trim()) {
+    const user = auth.currentUser;
+    if (newNote.trim() && user) {
       setIsAddingNote(true);
       try {
         const docRef = await addDoc(collection(db, 'notes'), {
           content: newNote,
           createdAt: new Date(),
+          userId: user.uid,
         });
         setNotes([...notes, { id: docRef.id, content: newNote }]);
         setNewNote('');
@@ -155,6 +214,11 @@ const Home: React.FC = () => {
         </div>
       </header>
       <div className="my-6 w-full flex flex-col justify-center items-center p-2">
+        <div>
+          <h1 className='text-xl'>
+            Welcome, {userEmail ? userEmail : 'User'}!
+          </h1>
+        </div>
         <textarea
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
@@ -191,6 +255,7 @@ const Home: React.FC = () => {
               alt="empty-note"
               width="300"
               className=""
+              priority
             />
             <h2 className='text-center text-purple font-semibold text-lg'>Create and edit notes in real time with no dime </h2>
             <p className='text-center mt-2'>No notes yet</p>
